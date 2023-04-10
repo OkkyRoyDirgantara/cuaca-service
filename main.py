@@ -119,14 +119,14 @@ def bot_start(now):
 
 if __name__ == '__main__':
     # schedule.every(2).hours.do(save_weather)
-    schedule.every(1).minutes.do(save_weather)
+    schedule.every(5).minutes.do(save_weather)
     try:
         now = pytz.timezone('Asia/Jakarta')
         now = datetime.now(now)
         bot_start(now)
         while check_bot_status():
             schedule.run_pending()
-            time.sleep(10)
+            time.sleep(60)
     except KeyboardInterrupt:
         now = pytz.timezone('Asia/Jakarta')
         now = datetime.now(now)
