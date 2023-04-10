@@ -64,12 +64,17 @@ def save_weather():
     two_hours_later = now + timedelta(hours=2)
     if two_hours_later.date() > now.date():
         weatherTomorrow = get_weather(two_hours_later)
-        sql = "INSERT INTO weathers (datetime, h0, h6, h12, h18, created_at) VALUES (%s, %s, %s, %s, %s, %s)"
-        val = (two_hours_later.strftime("%Y%m%d"), weatherTomorrow[0], weatherTomorrow[1], weatherTomorrow[2],
-               weatherTomorrow[3], two_hours_later)
-        query_db(sql, val)
-        print('inserted')
-        return
+        sql_check = f"SELECT * FROM weathers WHERE datetime = {two_hours_later.strftime('%Y%m%d')}"
+        checkifsame = query_all(sql_check)
+        if checkifsame[0][1] != two_hours_later.strftime("%Y%m%d"):
+            sql = "INSERT INTO weathers (datetime, h0, h6, h12, h18, created_at) VALUES (%s, %s, %s, %s, %s, %s)"
+            val = (two_hours_later.strftime("%Y%m%d"), weatherTomorrow[0], weatherTomorrow[1], weatherTomorrow[2],
+                   weatherTomorrow[3], two_hours_later)
+            try:
+                query_db(sql, val)
+                print('inserted')
+            except Exception as e:
+                print(f"error : {e}")
 
     sql_check = f"SELECT * FROM weathers WHERE datetime = {parseNow}"
     checkifsame = query_all(sql_check)
@@ -119,14 +124,15 @@ def bot_start(now):
 
 if __name__ == '__main__':
     # schedule.every(2).hours.do(save_weather)
-    schedule.every(5).minutes.do(save_weather)
+    schedule.clear()
+    schedule.every(5).seconds.do(save_weather)
     try:
         now = pytz.timezone('Asia/Jakarta')
         now = datetime.now(now)
         bot_start(now)
         while check_bot_status():
             schedule.run_pending()
-            time.sleep(60)
+            time.sleep(10)
     except KeyboardInterrupt:
         now = pytz.timezone('Asia/Jakarta')
         now = datetime.now(now)
