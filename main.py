@@ -66,15 +66,16 @@ def save_weather():
         weatherTomorrow = get_weather(two_hours_later)
         sql_check = f"SELECT * FROM weathers WHERE datetime = {two_hours_later.strftime('%Y%m%d')}"
         checkifsame = query_all(sql_check)
-        if checkifsame[0][1] != two_hours_later.strftime("%Y%m%d"):
-            sql = "INSERT INTO weathers (datetime, h0, h6, h12, h18, created_at) VALUES (%s, %s, %s, %s, %s, %s)"
-            val = (two_hours_later.strftime("%Y%m%d"), weatherTomorrow[0], weatherTomorrow[1], weatherTomorrow[2],
-                   weatherTomorrow[3], two_hours_later)
-            try:
-                query_db(sql, val)
-                print('inserted')
-            except Exception as e:
-                print(f"error : {e}")
+        if checkifsame != []:
+            if checkifsame[0][1] != two_hours_later.strftime("%Y%m%d"):
+                sql = "INSERT INTO weathers (datetime, h0, h6, h12, h18, created_at) VALUES (%s, %s, %s, %s, %s, %s)"
+                val = (two_hours_later.strftime("%Y%m%d"), weatherTomorrow[0], weatherTomorrow[1], weatherTomorrow[2],
+                       weatherTomorrow[3], two_hours_later)
+                try:
+                    query_db(sql, val)
+                    print('inserted')
+                except Exception as e:
+                    print(f"error : {e}")
 
     sql_check = f"SELECT * FROM weathers WHERE datetime = {parseNow}"
     checkifsame = query_all(sql_check)
@@ -84,42 +85,60 @@ def save_weather():
             if date == parseNow:
                 sql = "UPDATE weathers SET h0 = %s, h6 = %s, h12 = %s, h18 = %s, updated_at = %s WHERE datetime = %s"
                 val = (weatherToday[0], weatherToday[1], weatherToday[2], weatherToday[3], strNow, parseNow)
-                query_db(sql, val)
-                print('updated')
+                try:
+                    query_db(sql, val)
+                    print('updated')
+                except Exception as e:
+                    print(f"error : {e}")
             else:
                 sql = "INSERT INTO weathers (datetime, h0, h6, h12, h18, created_at) VALUES (%s, %s, %s, %s, %s, %s)"
                 val = (parseNow, weatherToday[0], weatherToday[1], weatherToday[2], weatherToday[3], strNow)
-                query_db(sql, val)
-                print('inserted')
+                try:
+                    query_db(sql, val)
+                    print('inserted')
+                except Exception as e:
+                    print(f"error : {e}")
     else:
         sql = "INSERT INTO weathers (datetime, h0, h6, h12, h18, created_at) VALUES (%s, %s, %s, %s, %s, %s)"
         val = (parseNow, weatherToday[0], weatherToday[1], weatherToday[2], weatherToday[3], strNow)
-        query_db(sql, val)
-        print('inserted')
+        try:
+            query_db(sql, val)
+            print('inserted')
+        except Exception as e:
+            print(f"error : {e}")
 
 
 def check_bot_status() -> bool:
     sql = "SELECT * FROM bot_status where id = 2"
-    status = query_all(sql)
-    if status[0][1] == 1:
-        return True
-    else:
-        return False
+    try:
+        status = query_all(sql)
+        if status[0][1] == 1:
+            return True
+        else:
+            return False
+    except Exception as e:
+        print(f"error : {e}")
 
 
 def bot_stop(now):
     status = 0
     sql = "UPDATE bot_status SET is_run = %s, stop_at = %s WHERE id = 2"
     val = (status, now)
-    query_db(sql, val)
-    raise SystemExit
+    try:
+        query_db(sql, val)
+        raise SystemExit
+    except Exception as e:
+        print(f"error : {e}")
 
 
 def bot_start(now):
     status = 1
     sql = "UPDATE bot_status SET is_run = %s, run_at = %s WHERE id = 2"
     val = (status, now)
-    query_db(sql, val)
+    try:
+        query_db(sql, val)
+    except Exception as e:
+        print(f"error : {e}")
 
 
 if __name__ == '__main__':
