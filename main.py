@@ -14,7 +14,10 @@ load_dotenv()
 
 def get_weather(time):
     url = "https://data.bmkg.go.id/DataMKG/MEWS/DigitalForecast/DigitalForecast-JawaTimur.xml"
-    response = requests.get(url, verify=True)
+    try:
+        response = requests.get(url)
+    except Exception as e:
+        raise e
     r = response.text
 
     Lamongan = bs(r, "xml")
@@ -55,7 +58,10 @@ def query_db(sql, val):
 def query_all(sql):
     mydb.connect()
     rundb = mydb.cursor()
-    rundb.execute(sql)
+    try:
+        rundb.execute(sql)
+    except Exception as e:
+        raise e
     result = rundb.fetchall()
     rundb.close()
     mydb.close()
