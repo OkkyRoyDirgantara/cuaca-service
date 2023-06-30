@@ -17,6 +17,7 @@ def get_weather(time):
     try:
         response = requests.get(url)
     except Exception as e:
+        print(f"error : {e}")
         raise e
     r = response.text
 
@@ -24,10 +25,10 @@ def get_weather(time):
     weatherLamongan = Lamongan.find(id="501285").find(id="weather")
 
     datetime = time.strftime("%Y%m%d")
-    h0 = weatherLamongan.find(datetime=f"{datetime}1800").value.string
-    h6 = weatherLamongan.find(datetime=f"{datetime}0600").value.string
-    h12 = weatherLamongan.find(datetime=f"{datetime}1200").value.string
-    h18 = weatherLamongan.find(datetime=f"{datetime}1800").value.string
+    h0:str = str(weatherLamongan.find(datetime=f"{datetime}1800").value.string)
+    h6:str = str(weatherLamongan.find(datetime=f"{datetime}0600").value.string)
+    h12:str = str(weatherLamongan.find(datetime=f"{datetime}1200").value.string)
+    h18:str = str(weatherLamongan.find(datetime=f"{datetime}1800").value.string)
     return [h0, h6, h12, h18]
 
 
@@ -170,14 +171,14 @@ def bot_start(now):
 
 if __name__ == '__main__':
     # schedule.every(2).hours.do(save_weather)
-    schedule.every(5).minutes.do(save_weather)
+    schedule.every(5).seconds.do(save_weather)
     try:
         now = pytz.timezone('Asia/Jakarta')
         now = datetime.now(now)
         bot_start(now)
         while check_bot_status():
             schedule.run_pending()
-            time.sleep(15)
+            time.sleep(1)
     except KeyboardInterrupt:
         now = pytz.timezone('Asia/Jakarta')
         now = datetime.now(now)
